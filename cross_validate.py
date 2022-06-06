@@ -1,28 +1,16 @@
 # coding: utf-8
 import math
-import main
 import idw
 import csv
 import xlrd
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import r2_score
+import numpy as np
 
 
-def mre(predict_points, measure_points):
-    n = len(predict_points)
-    _mre = 0.0
-    for i in range(n):
-        _mre += abs(predict_points[i][2] - measure_points[i][2])
-    _mre = _mre / n
-    return _mre
-
-
-def rmse(predict_points, measure_points):
-    n = len(predict_points)
-    _rmse = 0.0
-    for i in range(n):
-        _rmse += math.pow(predict_points[i][2] - measure_points[i][2], 2)
-    _rmse = _rmse / n
-    _rmse = math.sqrt(_rmse)
-    return _rmse
+def mfe(measure_zs, predict_zs):
+    return np.mean(np.subtract(measure_zs, predict_zs))
 
 
 def load_all_data(path):
@@ -42,7 +30,7 @@ def load_all_data(path):
 
 def load_all_points(col):
     points = []
-    work_book = xlrd.open_workbook("/Users/cakemonster/Desktop/删掉异常值第一种excel.xlsx")
+    work_book = xlrd.open_workbook("/Users/cakemonster/Desktop/statics/ace1.xls")
     sheet = work_book.sheet_by_index(0)
     for row_number in range(sheet.nrows):
         if row_number == 0:
@@ -57,14 +45,17 @@ def load_all_points(col):
 
 def test():
     # all_points = main.load_all_points()
-    all_points = load_all_points(21)
+    all_points = load_all_points(3)
     predict_points = random_validate(all_points)
 
     for i in range(len(all_points)):
         print('predict z :{} ,   measure z : {}'.format(predict_points[i], all_points[i]))
 
-    print('MRE: {}'.format(mre(predict_points, all_points)))
-    print('RMSE: {}'.format(rmse(predict_points, all_points)))
+    measure_zs = np.array(all_points)[..., 2]
+    predict_zs = np.array(predict_points)[..., 2]
+
+    print(r2_score(measure_zs, predict_zs))
+    print(mfe(measure_zs, predict_zs))
 
 
 def random_validate(points):
@@ -79,7 +70,8 @@ def random_validate(points):
             if i + 1 != len(points):
                 temp_measure_points.extend(points[i + 1:])
 
-        z = idw.interpolation(temp_predict_point[0], temp_predict_point[1], temp_measure_points)
+        z = idw.interpolation(temp_predict_point[0], temp_predict_point[1], temp_measure_points,
+                              len(temp_predict_point))
         # print('predict z : {}, measure z :{}'.format(z, temp_predict_point[2]))
         temp_predict_point[2] = z
         all_predict_points.append(temp_predict_point)
