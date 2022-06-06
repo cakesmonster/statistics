@@ -1,7 +1,7 @@
 import xlrd
 import csv
 import os
-import idw
+from main import idw
 
 
 def load_all_points():
