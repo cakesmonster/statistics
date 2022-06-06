@@ -62,5 +62,4 @@ def process(input_file, output_file, sheet_index):
 if __name__ == '__main__':
     _input_file = '/Users/cakemonster/Desktop/fit_populations/test.xlsx'
     _output_file = '/Users/cakemonster/Desktop/fit_populations/test_fill.csv'
-    _address_index = 2
     process(_input_file, _output_file, default_sheet_index)
