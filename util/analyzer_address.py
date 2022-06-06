@@ -1,7 +1,11 @@
 # coding: utf-8
 import xlrd
-import xlwt
+import csv
 import requests
+import os
+import sys
+
+default_sheet_index = 0
 
 
 def analyzer_address(address):
@@ -22,20 +26,7 @@ def analyzer_address(address):
     return location
 
 
-def handle_fit_population():
-    work_book = xlrd.open_workbook("/Users/cakemonster/Downloads/需要拟合的人群.xls")
-    sheet_names = work_book.sheet_names()
-    for sheet_name in sheet_names:
-        new_rows = []
-        sheet = work_book.sheet_by_name(sheet_name)
-        for i in range(sheet.nrows):
-            new_row = handle_each_row(sheet.row(i))
-            new_rows.append(new_row)
-        new_file_name = '/Users/cakemonster/Downloads/' + sheet_name + '.xls'
-        write_new_sheet(new_file_name, sheet_name, new_rows)
-
-
-def handle_each_row(row):
+def process_line(row):
     new_row = [row[0].value, row[1].value]
     address = row[2].value
     new_row.append(row[2].value)
@@ -50,15 +41,26 @@ def handle_each_row(row):
     return new_row
 
 
-def write_new_sheet(new_excel, sheet_name, rows):
-    index = len(rows)
-    workbook = xlwt.Workbook()
-    sheet = workbook.add_sheet(sheet_name)
-    for i in range(0, index):
-        for j in range(0, len(rows[i])):
-            sheet.write(i, j, rows[i][j])
-    workbook.save(new_excel)  # 保存工作簿
+def process(input_file, output_file, sheet_index):
+    if not os.path.exists(input_file):
+        sys.exit('file: {} is not exist'.format(input_file))
+    work_book = xlrd.open_workbook(input_file)
+    sheet = work_book.sheet_by_index(sheet_index)
+    new_lines = []
+    try:
+        for row_number in range(sheet.nrows):
+            new_line = process_line(sheet.row(row_number))
+            new_lines.append(new_line)
+    except Exception:
+        sys.exit('load points in file: {} error'.format(input_file))
+
+    with open(output_file, 'w') as f:
+        write = csv.writer(f)
+        write.writerows(new_lines)
 
 
 if __name__ == '__main__':
-    handle_fit_population()
+    _input_file = '/Users/cakemonster/Desktop/fit_populations/test.xlsx'
+    _output_file = '/Users/cakemonster/Desktop/fit_populations/test_fill.csv'
+    _address_index = 2
+    process(_input_file, _output_file, default_sheet_index)
