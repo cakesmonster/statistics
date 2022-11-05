@@ -74,11 +74,12 @@ def load_fit_population1(path):
     return title, fit_points
 
 
-def fit(points, fit_points):
+def fit(points, fit_points, distance_limit):
     """
     拟合
     :param points: 所有的点
     :param fit_points: 需要拟合的点
+    :param distance_limit: 距限制
     :return:
     """
     new_fit_points = []
@@ -89,7 +90,7 @@ def fit(points, fit_points):
         # 判断需要拟合的点的第三列和第四列不为空，也就是经纬度不为空
         if fit_point[2] != '' and fit_points[3] != '':
             # 调用idw方法进行差值
-            z = idw.interpolation(float(fit_point[2]), float(fit_point[3]), points, len(points))
+            z = idw.interpolation(float(fit_point[2]), float(fit_point[3]), points, len(points), distance_limit)
             # 新的点的数据就是长这样： [name, address, x , y, z]
             new_fit_point.append(z)
         else:

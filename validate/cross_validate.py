@@ -40,13 +40,13 @@ def validate_options(options):
         sys.exit('file type just support excel and csv')
 
 
-def cross_interpolation(points):
+def cross_interpolation(points, distance_limit):
     predict_points = []
     for i in range(len(points)):
         temp_measure_points = copy.deepcopy(points)
         temp_predict_point = temp_measure_points.pop(i)
         z = idw.interpolation(temp_predict_point[0], temp_predict_point[1], temp_measure_points,
-                              len(temp_measure_points))
+                              len(temp_measure_points), distance_limit)
         temp_predict_point[2] = z
         predict_points.append(temp_predict_point)
 
@@ -63,7 +63,7 @@ def process(options):
                                              options.has_title)
 
     # 交叉验证
-    predict_points = cross_interpolation(all_points)
+    predict_points = cross_interpolation(all_points, 500)
 
     for i in range(len(all_points)):
         print('predict point :{} ,   measure point : {}'.format(predict_points[i], all_points[i]))
