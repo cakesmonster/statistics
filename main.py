@@ -123,6 +123,6 @@ if __name__ == '__main__':
         # 加载采样点里的第i列的[x, y ,z]的所有的点
         _points = load_points.load_by_csv('/Users/cakemonster/Desktop/sample.csv', 1, 2, i, True)
         # 拟合需要拟合的点
-        fit_points = fit(_points, fit_points)
+        fit_points = fit(_points, fit_points, 500)
         if i == 20:
             write_csv('/Users/cakemonster/Desktop/new_fit/result.csv', fit_points)
