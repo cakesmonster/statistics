@@ -77,13 +77,18 @@ def process(options):
 
 
 if __name__ == '__main__':
-    excel_file = '/Users/cakemonster/Desktop/statics/湖北大冶土壤SVOCS.xlsx'
+    excel_file = '/Users/cakemonster/Desktop/statics/采样点.csv'
     _lon_index = '1'
     _lat_index = '2'
     _z_index = '3'
 
+    # excel
+    # _args = ['--input-file', excel_file, '--lon-index', _lon_index, '--lat-index', _lat_index, '--z-index',
+    #          _z_index]
+
+    # csv
     _args = ['--input-file', excel_file, '--lon-index', _lon_index, '--lat-index', _lat_index, '--z-index',
-             _z_index]
+             _z_index, '--file-type', 'csv']
     _options = handle_command_line(_args)
     validate_options(_options)
     process(_options)

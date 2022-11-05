@@ -2,6 +2,7 @@ import xlrd
 import csv
 import os
 from main import idw
+from main import load_points
 
 
 def load_all_points():
@@ -40,24 +41,43 @@ def load_fit_population(path):
     return title, fit_points
 
 
-def fit(path, new_dir, points):
-    title, fit_points = load_fit_population(path)
+def load_fit_population1(path):
+    work_book = xlrd.open_workbook(path)
+    sheet = work_book.sheet_by_index(0)
+
+    title = []
+    fit_points = []
+    for row_number in range(sheet.nrows):
+        # 前两行是标题直接放title的列表里
+        if row_number == 0:
+            title.append(sheet.row(row_number))
+            continue
+        name = sheet.row(row_number)[0].value
+        address = sheet.row(row_number)[1].value
+        lon = sheet.row(row_number)[2].value
+        lat = sheet.row(row_number)[3].value
+        fit_point = [name, address, lon, lat]
+        fit_points.append(fit_point)
+    return title, fit_points
+
+
+def fit(points, fit_points):
     new_fit_points = []
-    new_fit_points.extend(title)
     for fit_point in fit_points:
         new_fit_point = []
         new_fit_point.extend(fit_point)
-        if fit_point[3] != '' and fit_points[4] != '':
-            z = idw.interpolation(float(fit_point[3]), float(fit_point[4]), points)
+        if fit_point[2] != '' and fit_points[3] != '':
+            z = idw.interpolation(float(fit_point[2]), float(fit_point[3]), points, len(points))
             new_fit_point.append(z)
         else:
-            pass
+            new_fit_point.append('')
         new_fit_points.append(new_fit_point)
 
-    filename = os.path.basename(path).split('.')[0]
-    new_path = os.path.join(new_dir, filename + '_new.csv')
-
-    write_csv(new_path, new_fit_points)
+    # filename = os.path.basename(path).split('.')[0]
+    # new_path = os.path.join(new_dir, filename + '_new.csv')
+    #
+    # write_csv(new_path, new_fit_points)
+    return new_fit_points
 
 
 def write_csv(path, points):
@@ -67,12 +87,12 @@ def write_csv(path, points):
 
 
 if __name__ == '__main__':
+    _dir = '/Users/cakemonster/Desktop/fit/'
+    _new_dir = '/Users/cakemonster/Desktop/new_fit/'
 
-    _dir = '/Users/cakemonster/Desktop/fit_populations/'
-    _new_dir = '/Users/cakemonster/Desktop/new_fit_populations/'
-    _points = load_all_points()
-    for file in os.listdir(_dir):
-        if file == '.DS_Store':
-            continue
-        _file = os.path.join(_dir, file)
-        fit(_file, _new_dir, _points)
+    title, fit_points = load_fit_population1('/Users/cakemonster/Desktop/fit/fillpeople(1).xlsx')
+    for i in range(3, 19):
+        _points = load_points.load_by_csv('/Users/cakemonster/Desktop/statics/采样点.csv', 1, 2, i, True)
+        fit_points = fit(_points, fit_points)
+        if i == 18:
+            write_csv('/Users/cakemonster/Desktop/new_fit/result.csv', fit_points)
