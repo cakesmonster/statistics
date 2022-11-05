@@ -112,16 +112,16 @@ def write_csv(path, points):
 
 
 if __name__ == '__main__':
-    _dir = '/Users/cakemonster/Desktop/fit/'
-    _new_dir = '/Users/cakemonster/Desktop/new_fit/'
+    # _dir = '/Users/cakemonster/Desktop/fit/'
+    # _new_dir = '/Users/cakemonster/Desktop/new_fit/'
     # 获取需要拟合的点，文件格式是第一列是姓名，第二列是地址，第三列是经度、第四列是纬度
     # 已经写死了第三列、第四列必须是经纬度，所以如果你自己需要计算别的点的话就需要把经纬度放到第三列和第四列
     title, fit_points = load_fit_population1('/Users/cakemonster/Desktop/fillpeople.xlsx')
     # 遍历第四列到第20列
-    for i in range(3, 19):
+    for i in range(3, 21):
         # 加载采样点里的第i列的[x, y ,z]的所有的点
         _points = load_points.load_by_csv('/Users/cakemonster/Desktop/sample.csv', 1, 2, i, True)
         # 拟合需要拟合的点
         fit_points = fit(_points, fit_points)
-        if i == 18:
+        if i == 20:
             write_csv('/Users/cakemonster/Desktop/new_fit/result.csv', fit_points)
